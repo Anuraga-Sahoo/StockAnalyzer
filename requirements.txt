@@ -1,0 +1,7 @@
+flask
+datetime
+yfinance
+pandas
+numpy
+logging
+click
