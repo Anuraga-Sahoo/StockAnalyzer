@@ -1,10 +1,10 @@
 /* Base styles */
 :root {
-    --primary-color: #2563eb;
+    --primary-color: #5777ce;
     --primary-dark: #1d4ed8;
     --secondary-color: #64748b;
-    --background-color: #f1f5f9;
-    --card-background: #ffffff;
+    --background-color: #262728;
+    --card-background: #0f0e0e;
     --text-color: #334155;
     --border-radius: 12px;
     --success-color: #10b981;
@@ -29,6 +29,79 @@ body {
     min-height: 100vh;
     display: flex;
     flex-direction: column;
+}
+/* dynamic stock recomendation list */
+.list-group-item{
+    color: white;
+}
+#otherStockRecomendationList{
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    padding: 1rem;
+    background-color: #161b21;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+.otherStockRecomendation{
+    max-width: 1243px;
+    margin: 2rem auto;
+    padding: 1rem;
+    background-color: #161b21;
+}
+.list-group-item-div{
+    background-color: #0e0f0f;
+    padding: 1rem;
+    display: grid;
+    place-items: center;
+    border-radius: 8px;
+    transition: all ease 0.3s;
+
+}
+.list-group-item-div:hover{
+    background-color: #101011;
+    cursor: pointer;
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    transition: all ease 0.3s;
+}
+.recomendationHeading{
+    color: rgb(190, 190, 190);
+}
+
+/* Loader */
+.loader {
+    width: 50px;
+    height: 50px;
+    border: 5px solid #5777ce;
+    border-top: 5px solid var(--primary-dark);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.Loadercontainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    /* height: 100vh; */
+    background-color: transparent;
+}
+/* Loader end */
+/* footer text */
+p{
+    color: white;
+}
+.footer{
+    background-color: #161b21;
+    height: 3rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .navbar {
@@ -63,6 +136,7 @@ body {
     margin: 0 auto;
     padding: 2rem;
     flex: 1;
+    
 }
 
 .dashboard {
@@ -83,24 +157,45 @@ header h1 {
 
 /* Input section */
 .input-section {
-    background-color: white;
+    background-color: var(--card-background);
+    outline: none;
     padding: 20px;
     border-radius: 10px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 2px 4px ;
     margin-bottom: 20px;
+    height: 7rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
 }
 
 .input-group {
     display: flex;
-    gap: 15px;
+    gap: 33px;
     flex-wrap: wrap;
 }
-
+.group{
+    display:flex;
+    flex-direction: column;
+    gap:10px;
+    justify-content: end;
+}
 input, select, button {
     padding: 10px 15px;
     border: 1px solid #ddd;
     border-radius: 4px;
     font-size: 1rem;
+    background-color: var(--card-background);
+    color: white;
+}
+input[type="date"]::-webkit-calendar-picker-indicator {
+    /* display: none; */
+    border-radius: 10%;
+    background-color: whitesmoke;
+    cursor: pointer;
+}
+::placeholder{
+    color: white;
 }
 
 input, select {
@@ -109,15 +204,21 @@ input, select {
 }
 
 button {
-    background-color: #3498db;
+    background-color: var(--primary-dark);
     color: white;
     border: none;
     cursor: pointer;
     transition: background-color 0.3s;
+    height: fit-content;
 }
 
 button:hover {
-    background-color: #2980b9;
+    background-color: var(--primary-color);
+    transition: background-color 0.3s;
+
+}
+label{
+    color: white;
 }
 
 /* Loading and Error states */
@@ -129,8 +230,8 @@ button:hover {
 }
 
 .loading-indicator {
-    background-color: #f8f9fa;
-    color: #666;
+    /* background-color: #f8f9fa; */
+    color: var(--primary-dark);
 }
 
 .error-message {
@@ -139,15 +240,17 @@ button:hover {
 }
 
 .hidden {
+    /* make this display property none after design the page */
     display: none;
 }
 
 /* Results section */
 .results-container {
-    background-color: white;
+    background-color: rgba(36, 36, 36, 0.778);
     padding: 20px;
+    margin-bottom: 20px;
     border-radius: 8px;
-    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
+    /* box-shadow: 0 2px 4px var(--primary-color); */
 }
 
 .price-recommendation {
@@ -161,13 +264,16 @@ button:hover {
     text-align: center;
     padding: 20px;
     border-radius: 4px;
-    background-color: #f8f9fa;
+    background-color: #161b21;
 }
 
 .current-price p {
     font-size: 2rem;
     font-weight: bold;
-    color: #2c3e50;
+    color: rgb(210, 206, 206);
+}
+.current-price{
+    color: white;
 }
 
 .recommendation-badge {
@@ -176,17 +282,25 @@ button:hover {
     border-radius: 20px;
     font-weight: bold;
 }
+.recommendation{
+    color: white;
+}
+.recommendation h2{
+    color: rgb(190, 190, 190);
+}
 
 /* Chart containers */
 .charts {
-    display: grid;
+    /* display: grid; */
+    display:none;
     gap: 20px;
     margin-bottom: 30px;
 }
 
 .chart-container {
-    background-color: white;
+    background-color: #161b21;
     padding: 20px;
+    
     border-radius: 8px;
     min-height: 400px;
 }
@@ -200,9 +314,10 @@ button:hover {
 }
 
 .signals-card, .metrics-card {
-    background-color: #f8f9fa;
+    background-color: #161b21;
     padding: 20px;
     border-radius: 8px;
+    color: rgb(190, 190, 190);
 }
 
 .metrics-grid {
@@ -213,7 +328,7 @@ button:hover {
 }
 
 .metric {
-    background-color: white;
+    background-color: #0f0e0e;
     padding: 15px;
     border-radius: 4px;
 }
@@ -251,5 +366,153 @@ button:hover {
     
     .metrics-grid {
         grid-template-columns: 1fr;
+    }
+}
+
+
+
+
+/* Add these media queries at the end of your CSS file */
+
+/* Tablet (768px - 1024px) */
+@media (max-width: 1024px) {
+    .container {
+        padding: 1.5rem;
+    }
+
+    .input-group {
+        gap: 12px;
+    }
+
+    input, select {
+        min-width: 250px;
+    }
+
+    .price-recommendation {
+        gap: 15px;
+    }
+
+    .charts {
+        grid-template-columns: 1fr;
+    }
+
+    .analysis-grid {
+        gap: 15px;
+    }
+}
+
+/* Mobile (480px - 767px) */
+@media (max-width: 767px) {
+    html {
+        font-size: 14px;
+    }
+
+    .nav-content {
+        padding: 0 1rem;
+    }
+
+    .logo {
+        font-size: 1.2rem;
+    }
+
+    .container {
+        padding: 1rem;
+    }
+
+    .input-group {
+        flex-direction: column;
+    }
+
+    input, select, button {
+        width: 100%;
+        min-width: unset;
+    }
+
+    .price-recommendation {
+        grid-template-columns: 1fr;
+        gap: 1rem;
+    }
+
+    .analysis-grid {
+        grid-template-columns: 1fr;
+    }
+
+    .metrics-grid {
+        grid-template-columns: 1fr;
+    }
+
+    #otherStockRecomendationList {
+        grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+        gap: 1rem;
+    }
+
+    .chart-container {
+        min-height: 300px;
+        padding: 1rem;
+    }
+
+    .current-price p {
+        font-size: 1.5rem;
+    }
+}
+
+/* Small Mobile (<480px) */
+@media (max-width: 480px) {
+    html {
+        font-size: 13px;
+    }
+
+    .logo {
+        font-size: 1rem;
+    }
+
+    .input-section {
+        height: auto;
+        padding: 1rem;
+    }
+
+    .list-group-item-div {
+        padding: 0.75rem;
+    }
+
+    .recomendationHeading {
+        font-size: 1.2rem;
+    }
+
+    footer p {
+        font-size: 0.8rem;
+        padding: 0 1rem;
+        text-align: center;
+    }
+
+    .metric {
+        padding: 10px;
+    }
+}
+
+/* Large Desktop (>1440px) */
+@media (min-width: 1440px) {
+    .container {
+        max-width: 1600px;
+    }
+
+    .nav-content {
+        max-width: 1600px;
+    }
+}
+
+/* Orientation-specific adjustments */
+@media (orientation: landscape) and (max-width: 767px) {
+    .container {
+        padding: 0.5rem;
+    }
+
+    .input-group {
+        flex-direction: row;
+        flex-wrap: wrap;
+    }
+
+    input, select {
+        flex: 1 1 45%;
     }
 }

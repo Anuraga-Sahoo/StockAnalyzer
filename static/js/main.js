@@ -81,7 +81,7 @@ function createPriceChart(chartData) {
     };
 
     Plotly.newPlot('priceChart', traces, layout);
-}
+}  
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////
 // Function Name - createIndicatorsChart
@@ -178,7 +178,7 @@ async function analyzeStock() {
         });
 
         const result = await response.json();
-
+        console.log(result)
         if (!result.success) {
             throw new Error(result.error);
         }
@@ -200,6 +200,8 @@ async function analyzeStock() {
 function updateUI(data) {
     // Show results container
     document.getElementById('results').classList.remove('hidden');
+    // show charts
+    document.getElementById('charts').style.display = 'grid'
 
     // Update current price and recommendation
     document.getElementById('currentPrice').textContent = formatCurrency(data.currentPrice);
@@ -211,7 +213,7 @@ function updateUI(data) {
     const signalsList = document.getElementById('signalsList');
     signalsList.innerHTML = '';
     data.signals.forEach(signal => {
-        const li = document.createElement('li');
+        const li = document.createElement('p');
         li.textContent = signal;
         signalsList.appendChild(li);
     });
@@ -232,6 +234,26 @@ function updateUI(data) {
 
     createPriceChart(data.chartData);
     createIndicatorsChart(data.chartData);
+
+    // update new stock recomendation
+    // Function to populate the object
+
+    const div = document.getElementById('otherStockRecomendationList');
+    
+    // Clear existing list items
+    div.innerHTML = '';
+    
+    // Create and append new list items
+    for (const [stock, score] of Object.entries(data.topGainerScores)) {
+        const li = document.createElement('h4');
+        const divElement = document.createElement('div');
+        divElement.appendChild(li)
+        li.textContent = `${stock}`;
+        div.appendChild(divElement);
+        li.setAttribute('class', 'list-group-item')
+        divElement.setAttribute('class', 'list-group-item-div');
+    }
+
 }
 
 /////////////////////////////////////////////////////////////////////////////////////////////////////////

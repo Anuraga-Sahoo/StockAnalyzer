@@ -13,8 +13,6 @@ import numpy as np
 import logging
 import click
 import time
-import requests
-
 
 # Initialize Flask app  and set up logging  
 
@@ -32,8 +30,6 @@ logger = logging.getLogger(__name__)
 #################################################################################################
 
 class IndianStockAnalyzer:
-   
-
     def __init__(self, 
                  rsi_period: int = 14,
                  rsi_overbought: float = 70,
@@ -48,7 +44,6 @@ class IndianStockAnalyzer:
         self.risk_free_rate = risk_free_rate
         self.stock_data = None
         self.stock_info = None
-        self.recommendationTopGainer = []
 
 #################################################################################################
 # Function Name - fetch_stock_data
@@ -78,15 +73,12 @@ class IndianStockAnalyzer:
             self.stock_data = data
             self.stock_info = stock.info
             
-            
             return data
             
         except Exception as e:
             logger.error(f"Error fetching stock data: {str(e)}")
             raise
-    # def recomendationTopGainer(self) -> list:
-    #     recomendationTopGainers = []
-    #     return recomendationTopGainers
+
 #################################################################################################
 # Function Name - calculate_rsi
 # Author - Ojas Ulhas Dighe
@@ -195,7 +187,7 @@ class IndianStockAnalyzer:
         drawdowns = (cumulative_returns - rolling_max) / rolling_max
         max_drawdown = drawdowns.min() * 100
         
-        # Beta (using Nifty 50 as benchmark) 
+        # Beta (using Nifty 50 as benchmark) # why we use this
         try:
             nifty = yf.download('^NSEI', start=self.stock_data.index[0])
             nifty_returns = nifty['Close'].pct_change().dropna()
@@ -216,9 +208,8 @@ class IndianStockAnalyzer:
 # Date - 3rd Mar 2025
 # Description - This function generates trading signals based on technical indicators
 #################################################################################################
-    
 
-    def generate_trading_signals(self) -> tuple[str, list, list]:
+    def generate_trading_signals(self) -> tuple[str, list]:
         """Generate trading signals based on technical indicators."""
         if self.stock_data is None:
             raise ValueError("Stock data not loaded. Call fetch_stock_data first.")
@@ -226,10 +217,9 @@ class IndianStockAnalyzer:
         df = self.calculate_technical_indicators()
         current = df.iloc[-1]
         prev = df.iloc[-2]
-
+        
         signals = []
         score = 0
-        predictTopgainer = []
         
         # RSI Signals
         if current['RSI'] < self.rsi_oversold:
@@ -266,88 +256,16 @@ class IndianStockAnalyzer:
         # Generate recommendation based on score
         if score >= 2:
             recommendation = "Strong Buy"
-            predictTopgainer.append(score)
         elif score > 0:
             recommendation = "Buy"
-            predictTopgainer.append(score)
-
         elif score == 0:
             recommendation = "Hold"
-            predictTopgainer.append(score)
-
         elif score > -2:
-            recommendation = "Sell" 
-            # predictTopgainer.append(score)
-
-
+            recommendation = "Sell"
         else:
             recommendation = "Strong Sell"
             
-        return recommendation, signals, predictTopgainer
-    
-    def fetch_top_gainers(self) -> str:
-            # get top gainer data
-            # Define URLs
-        nse_url = "https://www.nseindia.com"  # NSE homepage (to get cookies)
-        api_url_topgainer = "https://www.nseindia.com/api/live-analysis-variations?index=gainers"
-        api_url_toplooser = "https://www.nseindia.com/api/live-analysis-variations?index=loosers"
-
-
-# Define headers
-        headers = {
-    "User-Agent": "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36",
-    "Accept-Language": "en-US,en;q=0.9",
-    "Referer": "https://www.nseindia.com/",
-    }
-
-# Create a session
-        session = requests.Session()
-        self.recommendationTopGainer = {}
-
-        try:
-             # Step 1: Get cookies from the NSE homepage
-            session.get(nse_url, headers=headers)
-
-            # Step 2: Use the session with cookies to fetch API data of topgainer
-            gainer_response = session.get(api_url_topgainer, headers=headers)
-            gainer_response.raise_for_status()  # Raise an error if the request fails
-
-            # Step 3: Use the session with cookies to fetch API data of topgainer
-            looser_response = session.get(api_url_toplooser, headers=headers)
-            looser_response.raise_for_status()  # Raise an error if the request fails
-
-            # Step 4: Print the data
-            top_gainer_data = gainer_response.json()
-            top_looser_data = looser_response.json()
-
-            top_gainer_symbols = [item["symbol"] for item in top_gainer_data["NIFTY"].get("data", [])]
-            logger.info("Symbols extracting from top gainer api : %s", top_gainer_symbols)
-            
-
-            top_looser_symbols = [items["symbol"] for items in top_looser_data["NIFTY"].get("data", [])]
-            logger.info("Symbols extracting from top looser api : %s", top_looser_symbols)
-            
-            symbols = top_gainer_symbols + top_looser_symbols
-            print(symbols)
-            for symbol in symbols:
-                try:
-                    logger.info("Symbol running in loop %s", symbol)
-                    print(symbol)
-                    self.fetch_stock_data(symbol)
-                    self.calculate_technical_indicators()
-                    _, _, score_list = self.generate_trading_signals()
-                    if score_list:
-                        # self.recommendationTopGainer.append(score_list[0])
-                        self.recommendationTopGainer[symbol] = score_list[0]
-                        print(score_list[0])
-                except Exception as e :
-                    logger.error(f"Error processing {symbol}: {str(e)}")
-                    self.recommendationTopGainer[symbol] = None
-            return symbols
-        except requests.exceptions.RequestException as e:
-            logger.error(f"Error fetching top gainers: {str(e)}")
-            return []
-
+        return recommendation, signals
 
 #################################################################################################
 # Function Name - index
@@ -378,20 +296,10 @@ def analyze():
         analyzer = IndianStockAnalyzer()
         stock_data = analyzer.fetch_stock_data(symbol, exchange, start_date)
         
-        # Calculate main symbol
+        # Calculate technical indicators
         tech_data = analyzer.calculate_technical_indicators()
-        recommendation, signals, predictTopgainer = analyzer.generate_trading_signals()
+        recommendation, signals = analyzer.generate_trading_signals()
         risk_metrics = analyzer.calculate_risk_metrics()
-        #  process top gainers
-        topSymbol = analyzer.fetch_top_gainers()
-        
-        # recomendationTopGainers = analyzer.recomendationTopGainer()
-          
-        print("Top symbols : = ",topSymbol)
-        print("predict", predictTopgainer)
-        print("signals" , signals)
-        # print(analyzer.recomendationTopGainer)
-
 
         # Prepare chart data
         chart_data = []
@@ -410,9 +318,7 @@ def analyze():
             'success': True,
             'data': {
                 'recommendation': recommendation,
-                # 'currentPrice': round(float(stock_data['Close'][-1]), 2),
-                'currentPrice': round(float(stock_data['Close'].iloc[-1]), 2),
-
+                'currentPrice': round(float(stock_data['Close'][-1]), 2),
                 'signals': signals,
                 'riskMetrics': {
                     'sharpeRatio': round(float(risk_metrics['sharpe_ratio']), 2),
@@ -420,8 +326,7 @@ def analyze():
                     'maxDrawdown': round(float(risk_metrics['max_drawdown']), 2),
                     'beta': round(float(risk_metrics['beta']), 2) if risk_metrics['beta'] else None
                 },
-                'chartData': chart_data,
-                'topGainerScores': analyzer.recommendationTopGainer
+                'chartData': chart_data
             }
         }
         return jsonify(response)

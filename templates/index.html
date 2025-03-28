@@ -20,17 +20,39 @@
     <div class="container">
         <div class="input-section">
             <div class="input-group">
-                <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., RELIANCE)">
+                <div class="group">
+                    <label for="stockSymbol">
+                        <i class="fa-solid fa-magnifying-glass" id="btn"></i> Search Stock Name
+                    </label>
+                    <input type="text" id="stockSymbol" placeholder="Enter stock symbol (e.g., RELIANCE)">
+                </div>
+
+                <div class="group">
+
+                    <label for="exchange">
+                        <i class="fas fa-chart-pie"></i> Select Exchange
+                    </label>
                 <select id="exchange">
                     <option value="NS">NSE</option>
                     <option value="BO">BSE</option>
                 </select>
+            </div>
+                <div class="group">
+                <label for="startDate">
+                    <i class="far fa-calendar-alt"></i> Investment Date
+                </label>
                 <input type="date" id="startDate">
+            </div>
+            <div class="group">
                 <button id="analyzeBtn" onclick="analyzeStock()">Analyze Stock</button>
+            </div>
             </div>
         </div>
 
         <div id="loadingIndicator" class="loading-indicator hidden">
+            <div class="Loadercontainer">
+                <div class="loader"></div>
+            </div>
             Analyzing stock data...
         </div>
 
@@ -74,10 +96,20 @@
                         </div>
                     </div>
                 </div>
+
             </div>
+
+            <div class="otherStockRecomendation">
+                <h2 class="recomendationHeading">Recomended Stock by us For Buy</h2>
+                <div id="otherStockRecomendationList">
+                    
+                </div>
+            </div>
+
+
         </div>
 
-        <div class="charts">
+        <div class="charts" id="charts">
             <div id="priceChart" class="chart-container"></div>
             <div id="indicatorsChart" class="chart-container"></div>
         </div>
